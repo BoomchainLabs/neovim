@@ -217,9 +217,7 @@ static bool getln_interrupted_highlight = false;
 
 static int cedit_key = -1;  ///< key value of 'cedit' option
 
-#ifdef INCLUDE_GENERATED_DECLARATIONS
-# include "ex_getln.c.generated.h"
-#endif
+#include "ex_getln.c.generated.h"
 
 static handle_T cmdpreview_bufnr = 0;
 static int cmdpreview_ns = 0;
@@ -1543,6 +1541,17 @@ static int may_do_command_line_next_incsearch(int firstc, int count, incsearch_s
     pat = ccline.cmdbuff + skiplen;
   }
 
+  bool bslsh = false;
+  // do not search for the search end delimiter,
+  // unless it is part of the pattern
+  if (patlen > 2 && firstc == pat[patlen - 1]) {
+    patlen--;
+    if (pat[patlen - 1] == '\\') {
+      pat[patlen - 1] = (char)(uint8_t)firstc;
+      bslsh = true;
+    }
+  }
+
   if (next_match) {
     t = s->match_end;
     if (lt(s->match_start, s->match_end)) {
@@ -1566,6 +1575,9 @@ static int may_do_command_line_next_incsearch(int firstc, int count, incsearch_s
                        RE_SEARCH, NULL);
   emsg_off--;
   pat[patlen] = save;
+  if (bslsh) {
+    pat[patlen - 1] = '\\';
+  }
   ui_busy_stop();
   if (found) {
     s->search_start = s->match_start;
@@ -2664,7 +2676,7 @@ static bool cmdpreview_may_show(CommandLineState *s)
   char *cmdline = xstrdup(ccline.cmdbuff);
   const char *errormsg = NULL;
   emsg_off++;  // Block errors when parsing the command line, and don't update v:errmsg
-  if (!parse_cmdline(cmdline, &ea, &cmdinfo, &errormsg)) {
+  if (!parse_cmdline(&cmdline, &ea, &cmdinfo, &errormsg)) {
     emsg_off--;
     goto end;
   }
@@ -4804,6 +4816,10 @@ void get_user_input(const typval_T *const argvars, typval_T *const rettv, const 
 {
   rettv->v_type = VAR_STRING;
   rettv->vval.v_string = NULL;
+
+  if (cmdpreview) {
+    return;
+  }
 
   const char *prompt;
   const char *defstr = "";

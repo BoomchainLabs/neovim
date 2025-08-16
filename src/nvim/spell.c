@@ -35,8 +35,8 @@
 //
 // Thanks to Olaf Seibert for providing an example implementation of this tree
 // and the compression mechanism.
-// LZ trie ideas:
-//      http://www.irb.hr/hr/home/ristov/papers/RistovLZtrieRevision1.pdf
+// LZ trie ideas, original link (now dead)
+//      irb.hr/hr/home/ristov/papers/RistovLZtrieRevision1.pdf
 // More papers: http://www-igm.univ-mlv.fr/~laporte/publi_en.html
 //
 // Matching involves checking the caps type: Onecap ALLCAP KeepCap.
@@ -186,9 +186,7 @@ typedef struct {
 spelltab_T spelltab;
 bool did_set_spelltab;
 
-#ifdef INCLUDE_GENERATED_DECLARATIONS
-# include "spell.c.generated.h"
-#endif
+#include "spell.c.generated.h"
 
 /// mode values for find_word
 enum {

@@ -87,6 +87,11 @@ LSP
 • `vim.lsp.semantic_tokens.start/stop` now renamed to
   `vim.lsp.semantic_tokens.enable`
 • Missing fields in LSP messages are now represented using |vim.NIL| instead of nil.
+• |vim.lsp.util.convert_signature_help_to_markdown_lines()| activeParameter
+  handling updated:
+    • Values < 0 are now treated as `nil` instead of 0.
+    • Values outside the range of `signatures[activeSignature].parameters`
+      are now treated as `nil` instead of `#signatures[activeSignature].parameters`
 
 LUA
 
@@ -222,6 +227,7 @@ LSP
   https://microsoft.github.io/language-server-protocol/specification/#textDocument_linkedEditingRange
 • Support for related documents in pull diagnostics:
   https://microsoft.github.io/language-server-protocol/specifications/specification-current/#relatedFullDocumentDiagnosticReport
+• |vim.lsp.buf.signature_help()| supports "noActiveParameterSupport".
 
 LUA
 
@@ -291,6 +297,8 @@ TUI
 UI
 
 • |:restart| restarts Nvim and reattaches the current UI.
+• |:connect| dynamically connects the current UI to the server at the given
+  address.
 • |:checkhealth| shows a summary in the header for every healthcheck.
 • |ui-multigrid| provides composition information and absolute coordinates.
 • `vim._extui` provides an experimental commandline and message UI intended to
@@ -321,6 +329,8 @@ These existing features changed their behavior.
 • |$VIM| and |$VIMRUNTIME| no longer check for Vim version-specific runtime
   directory `vim{number}` (e.g. `vim82`).
 • 'scrollback' maximum value increased from 100000 to 1000000
+• |matchfuzzy()| and |matchfuzzypos()| use an improved fuzzy matching algorithm
+  (same as fzy).
 
 ==============================================================================
 REMOVED FEATURES                                                 *news-removed*
